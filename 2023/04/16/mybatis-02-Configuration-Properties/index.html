@@ -16,14 +16,14 @@
   <meta name="author" content="butterflyzh">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Mybatis 加载XML资源是由 Resources类来完成的，Resources 类其实是包装了类加载，所以完成资源的加载是由 ClassLoader 来实现的。  ClassLoader 的类别Java内置三种类加载器:  application or system 类加载器 extension 类加载器 bootstrap 类加载器  Bootstrap 类加载器 Bootstrap 类加">
+    <meta name="description" content="Mybatis的配置Mapper文件的子节点Properties是用来配置外部参数，例如数据库用户名、密码等等。 Properties节点配置方式Properties节点有4种配置方式：  指定Properties节点的resource属性 指定Properties节点的url属性 在Properties节点下添加子节点Propertie 构造SqlSessionFactoryBuilder对象时">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Resources 资源加载">
-<meta property="og:url" content="https://butterflyzh.github.io/2023/04/05/%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD/index.html">
+<meta property="og:title" content="mybatis-02-Configuration-Properties">
+<meta property="og:url" content="https://butterflyzh.github.io/2023/04/16/mybatis-02-Configuration-Properties/index.html">
 <meta property="og:site_name" content="Butterflyzh&#39;s blog">
-<meta property="og:description" content="Mybatis 加载XML资源是由 Resources类来完成的，Resources 类其实是包装了类加载，所以完成资源的加载是由 ClassLoader 来实现的。  ClassLoader 的类别Java内置三种类加载器:  application or system 类加载器 extension 类加载器 bootstrap 类加载器  Bootstrap 类加载器 Bootstrap 类加">
+<meta property="og:description" content="Mybatis的配置Mapper文件的子节点Properties是用来配置外部参数，例如数据库用户名、密码等等。 Properties节点配置方式Properties节点有4种配置方式：  指定Properties节点的resource属性 指定Properties节点的url属性 在Properties节点下添加子节点Propertie 构造SqlSessionFactoryBuilder对象时">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-04-05T10:07:28.000Z">
+<meta property="article:published_time" content="2023-04-16T10:44:57.000Z">
 <meta property="article:modified_time" content="2023-04-23T13:05:22.440Z">
 <meta property="article:author" content="butterflyzh">
 <meta property="article:tag" content="原创">
@@ -31,7 +31,7 @@
   
   
   
-  <title>Resources 资源加载 - Butterflyzh&#39;s blog</title>
+  <title>mybatis-02-Configuration-Properties - Butterflyzh&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -166,7 +166,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Resources 资源加载"></span>
+            <span id="subtitle" data-typed-text="mybatis-02-Configuration-Properties"></span>
           
         </div>
 
@@ -177,8 +177,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-05 10:07" pubdate>
-          2023年4月5日 上午
+        <time datetime="2023-04-16 10:44" pubdate>
+          2023年4月16日 上午
         </time>
       </span>
     
@@ -189,7 +189,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k 字
+          2.9k 字
         
       </span>
     
@@ -200,7 +200,7 @@
         
         
         
-          18 分钟
+          25 分钟
         
       </span>
     
@@ -238,54 +238,42 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Resources 资源加载</h1>
+            <h1 style="display: none">mybatis-02-Configuration-Properties</h1>
             
             
               <div class="markdown-body">
                 
-                <p>Mybatis 加载XML资源是由 <code>Resources</code>类来完成的，<code>Resources</code> 类其实是包装了类加载，所以完成资源的加载是由 ClassLoader 来实现的。</p>
-<hr>
-<h3 id="ClassLoader-的类别"><a href="#ClassLoader-的类别" class="headerlink" title="ClassLoader 的类别"></a>ClassLoader 的类别</h3><p>Java内置三种类加载器:</p>
+                <p>Mybatis的配置Mapper文件的子节点Properties是用来配置外部参数，例如数据库用户名、密码等等。</p>
+<h3 id="Properties节点配置方式"><a href="#Properties节点配置方式" class="headerlink" title="Properties节点配置方式"></a>Properties节点配置方式</h3><p>Properties节点有4种配置方式：</p>
 <ul>
-<li>application or system 类加载器</li>
-<li>extension 类加载器</li>
-<li>bootstrap 类加载器</li>
+<li>指定Properties节点的resource属性</li>
+<li>指定Properties节点的url属性</li>
+<li>在Properties节点下添加子节点Propertie</li>
+<li>构造SqlSessionFactoryBuilder对象时，指定Properties</li>
 </ul>
-<p><strong>Bootstrap 类加载器</strong></p>
-<p>Bootstrap 类加载器负责加载 $JAVA_HOME&#x2F;jre&#x2F;lib 目录下类，它是其他类加载器的父类加载器，Bootstrap 类加载器不是由Java实现的，所以我们获取不到Bootstrap类加载器。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">System.out.println(<span class="hljs-string">&quot;Classloader of Logging:&quot;</span><br>      + String.class.getClassLoader());<br><br><span class="hljs-comment">// 打印 null</span><br></code></pre></td></tr></table></figure>
+<p><strong>Properties节点的resource属性</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span> <span class="hljs-attr">resource</span>=<span class="hljs-string">&quot;org/mybatis/example/config.properties&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
+<p>这里resource指向classpath下的config.properties文件，由Resources来完成文件读取工作。</p>
+<p><strong>Properties节点的url属性</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span> <span class="hljs-attr">url</span>=<span class="hljs-string">&quot;file:C:/org/mybatis/example/config.properties&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
+<p>如果外部参数文件不在classpath内或者在其他服务器上，那我们就可以通过url属性来加载文件了。</p>
+<p><strong>Properties子节点Propertie</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;dev_user&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;F2Fa3!33TYyg&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
-<p><strong>Extension 类加载器</strong></p>
-<p>Extension 类加载器的父类加载器是 Boostrap，它负责加载 $JAVA_HOME&#x2F;lib&#x2F;ext 目录或者由 java.ext.dirs 系统变量指定目录下的类。</p>
-<p><strong>System 类加载器</strong></p>
-<p>System 类加载负责加载 classpath 下或者由 -classpath、-cp 命令行指定参数下加载类，它是父类加载器是 Extension。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">System.out.println(<span class="hljs-string">&quot;Classloader of this class:&quot;</span> + SqlSessionTest.class.getClassLoader());<br>System.out.println(<span class="hljs-string">&quot;Classloader of system:&quot;</span> + ClassLoader.getSystemClassLoader());<br><span class="hljs-comment">// Classloader of this class:jdk.internal.loader.ClassLoaders$AppClassLoader@63947c6b</span><br><span class="hljs-comment">// Classloader of this class:jdk.internal.loader.ClassLoaders$AppClassLoader@63947c6b</span><br></code></pre></td></tr></table></figure>
+<p><strong>SqlSessionFactoryBuilder指定Properties</strong><br>SqlSessionFactoryBuilder有许多build的重载方法，build方法可以传入Properties对象，这样也可以配置外部参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">resource</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;org/apache/ibatis/builder/MapperConfig.xml&quot;</span>;<br><span class="hljs-keyword">final</span> <span class="hljs-type">Reader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> Resources.getResourceAsReader(resource);<br><span class="hljs-type">Properties</span> <span class="hljs-variable">props</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>props.put(<span class="hljs-string">&quot;driver&quot;</span>, <span class="hljs-string">&quot;123&quot;</span>);<br>props.put(<span class="hljs-string">&quot;url&quot;</span>, <span class="hljs-string">&quot;jdbc:mysql&quot;</span>);<br>sqlMapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SqlSessionFactoryBuilder</span>().build(reader, props);<br></code></pre></td></tr></table></figure>
 
-<h3 id="ClassLoader-获取资源和-Class-获取资源区别"><a href="#ClassLoader-获取资源和-Class-获取资源区别" class="headerlink" title="ClassLoader 获取资源和 Class 获取资源区别"></a>ClassLoader 获取资源和 Class 获取资源区别</h3><p>Class.getResource() 方法获取资源，最终也是通过 ClassLoader 来实现的。</p>
-<p>如果资源的路径名是已 &#x2F; 开头，那么表明资源路径名是绝对路径；否则就是相对路径(相对于 Class 的包的路径)。</p>
-<p>例如，有一个项目的目录结构如下：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">├─src</span><br><span class="hljs-string">│</span>  <span class="hljs-string">└─main</span><br><span class="hljs-string">│</span>      <span class="hljs-string">├─java</span><br><span class="hljs-string">│</span>      <span class="hljs-string">│</span>  <span class="hljs-string">└─org</span><br><span class="hljs-string">│</span>      <span class="hljs-string">│</span>      <span class="hljs-string">└─example</span><br><span class="hljs-string">│</span>      <span class="hljs-string">│</span>          <span class="hljs-string">└─hello</span><br><span class="hljs-string">│</span>      <span class="hljs-string">│</span>                  <span class="hljs-string">ResourceExample.java</span><br><span class="hljs-string">│</span>      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>      <span class="hljs-string">└─resources</span><br><span class="hljs-string">│</span>          <span class="hljs-string">└─org</span><br><span class="hljs-string">│</span>              <span class="hljs-string">└─example</span><br><span class="hljs-string">│</span>                  <span class="hljs-string">└─hello</span><br><span class="hljs-string">│</span>                          <span class="hljs-string">hello.txt</span><br><span class="hljs-string">│</span><br><span class="hljs-string">└─target</span><br>    <span class="hljs-string">├─classes</span><br>    <span class="hljs-string">│</span>  <span class="hljs-string">└─org</span><br>    <span class="hljs-string">│</span>      <span class="hljs-string">└─example</span><br>    <span class="hljs-string">│</span>          <span class="hljs-string">└─hello</span><br>    <span class="hljs-string">│</span>                  <span class="hljs-string">hello.txt</span><br>    <span class="hljs-string">│</span>                  <span class="hljs-string">ResourceExample.class</span><br></code></pre></td></tr></table></figure>
 
-<p>使用绝对路径获取资源：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">URL resource= ClassGetResourceExample.class.getResource(<span class="hljs-string">&quot;/org/example/hello/resource/example.txt&quot;</span>);<br>    Assertions.assertNotNull(resource); <br></code></pre></td></tr></table></figure>
+<h3 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h3><p>上面我们已经知道了4种配置方式，你可能会有这样疑问，如果4种方式都同时使用，且都配置相同的属性名时，谁的优先级更高呢？</p>
+<p>结论是：SqlSessionFactoryBuilder的方式 <font color="red">&gt;</font> Properties节点resource属性 <font color="red">&#x3D;</font> Properties节点url属性 <font color="red">&gt;</font> Properties节点子节点。</p>
+<p>注意：resource属性和url属性不能同时存在。</p>
+<p>具体源码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-title function_">XMLConfigBuilder</span><span class="hljs-params">(Class&lt;? extends Configuration&gt; configClass, XPathParser parser, String environment,</span><br><span class="hljs-params">    Properties props)</span> &#123;<br>  <span class="hljs-built_in">super</span>(newConfig(configClass));<br>  ErrorContext.instance().resource(<span class="hljs-string">&quot;SQL Mapper Configuration&quot;</span>);<br>  <span class="hljs-comment">// props 来自于SqlSessionFactoryBuilder</span><br>  <span class="hljs-built_in">this</span>.configuration.setVariables(props);<br>  <span class="hljs-built_in">this</span>.parsed = <span class="hljs-literal">false</span>;<br>  <span class="hljs-built_in">this</span>.environment = environment;<br>  <span class="hljs-built_in">this</span>.parser = parser;<br>&#125;<br><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">propertiesElement</span><span class="hljs-params">(XNode context)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>  <span class="hljs-keyword">if</span> (context != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-comment">// 获取Properties下的Propertie节点，优先级最低</span><br>    <span class="hljs-type">Properties</span> <span class="hljs-variable">defaults</span> <span class="hljs-operator">=</span> context.getChildrenAsProperties();<br>    <span class="hljs-type">String</span> <span class="hljs-variable">resource</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;resource&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;url&quot;</span>);<br>    <span class="hljs-keyword">if</span> (resource != <span class="hljs-literal">null</span> &amp;&amp; url != <span class="hljs-literal">null</span>) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BuilderException</span>(<br>          <span class="hljs-string">&quot;The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> (resource != <span class="hljs-literal">null</span>) &#123;<br>      defaults.putAll(Resources.getResourceAsProperties(resource));<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (url != <span class="hljs-literal">null</span>) &#123;<br>      defaults.putAll(Resources.getUrlAsProperties(url));<br>    &#125;<br>    <span class="hljs-comment">// 来自于SqlSessionFactoryBuilder, 优先级最高</span><br>    <span class="hljs-type">Properties</span> <span class="hljs-variable">vars</span> <span class="hljs-operator">=</span> configuration.getVariables();<br>    <span class="hljs-keyword">if</span> (vars != <span class="hljs-literal">null</span>) &#123;<br>      defaults.putAll(vars);<br>    &#125;<br>    parser.setVariables(defaults);<br>    configuration.setVariables(defaults);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>使用相对路径获取资源</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">URL resource= ClassGetResourceExample.class.getResource(<span class="hljs-string">&quot;example.txt&quot;</span>);<br>Assertions.assertNotNull(resource); <br></code></pre></td></tr></table></figure>
 
-<p>ClassLoader 获取资源，资源路径名都是绝对路径，不能从 &#x2F; 开头，表示从当前 classpath 加载。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">URL resource= ClassGetResourceExample.class.getResource(<span class="hljs-string">&quot;org/example/hello/resource/example.txt&quot;</span>);<br>Assertions.assertNotNull(resource); <br></code></pre></td></tr></table></figure>
-
-<h3 id="Resources"><a href="#Resources" class="headerlink" title="Resources"></a>Resources</h3><p>Resources 类(类名是名词)是负责加载资源，实际加载资源都是由类加载类负责，所以我们可以通过Resouces 类来加载classpath下的资源，它提供一些列方法：</p>
-<ul>
-<li>getResourceAsStream()</li>
-<li>getResourceAsReader()</li>
-<li>getResourceAsFile()</li>
-</ul>
-<p>这里列举三个方法，主要是看一下它方法命名：动词 + 名词。以Stream&#x2F;Reader&#x2F;File的形式获取资源。</p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
-<li><strong><a target="_blank" rel="noopener" href="https://www.baeldung.com/java-class-vs-classloader-getresource">Difference Between Class.getResource() and ClassLoader.getResource()</a></strong></li>
-<li><strong><a target="_blank" rel="noopener" href="https://www.baeldung.com/java-classloaders">Class Loaders in Java</a></strong></li>
-</ul>
+<h3 id="占位符的替换"><a href="#占位符的替换" class="headerlink" title="占位符的替换"></a>占位符的替换</h3><p>Mybatis支持占位符替换，例如在配置数据库时，配置如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dataSource</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;POOLED&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;username&#125;&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dataSource</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>这里的 ${username} 会被替换成 Properties 节点定义的值。占位符替换是由 PropertyParser 实现的。</p>
 
                 
               </div>
@@ -331,8 +319,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Resources 资源加载</div>
-      <div>https://butterflyzh.github.io/2023/04/05/资源加载/</div>
+      <div>mybatis-02-Configuration-Properties</div>
+      <div>https://butterflyzh.github.io/2023/04/16/mybatis-02-Configuration-Properties/</div>
     </div>
     <div class="license-meta">
       
@@ -344,7 +332,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月5日</div>
+          <div>2023年4月16日</div>
         </div>
       
       
@@ -376,15 +364,21 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/09/mybatis-01-SqlSessionFactoryBuilder/" title="SqlSessionFactoryBuilder">
+                      <a href="/2023/04/23/hello-world/" title="Hello World">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SqlSessionFactoryBuilder</span>
+                        <span class="hidden-mobile">Hello World</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2023/04/09/mybatis-01-SqlSessionFactoryBuilder/" title="SqlSessionFactoryBuilder">
+                        <span class="hidden-mobile">SqlSessionFactoryBuilder</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
