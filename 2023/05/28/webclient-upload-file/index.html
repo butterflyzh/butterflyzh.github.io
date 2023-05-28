@@ -18,20 +18,20 @@
   
     <meta name="description" content="背景我们有个管理后台的服务使用 spring-cloud-gateway-mvc 作为网关代理到其他服务来管理系统。我们有个上传文件的场景，但是由于 spring-cloud-gateway-mvc 并没有把上传的文件代理到其他服务。解决的办法有两种方式：  通过生成对象存储的预签名的方式 用webClient上传文件  我们解决是第二种方法，处理逻辑就是：首先，判断请求是否为 multipart">
 <meta property="og:type" content="article">
-<meta property="og:title" content="webclient-upload-file">
+<meta property="og:title" content="Spring-cloud-gateway-mvc 解决文件上传">
 <meta property="og:url" content="https://butterflyzh.github.io/2023/05/28/webclient-upload-file/index.html">
 <meta property="og:site_name" content="Butterflyzh&#39;s blog">
 <meta property="og:description" content="背景我们有个管理后台的服务使用 spring-cloud-gateway-mvc 作为网关代理到其他服务来管理系统。我们有个上传文件的场景，但是由于 spring-cloud-gateway-mvc 并没有把上传的文件代理到其他服务。解决的办法有两种方式：  通过生成对象存储的预签名的方式 用webClient上传文件  我们解决是第二种方法，处理逻辑就是：首先，判断请求是否为 multipart">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-05-28T09:04:20.000Z">
-<meta property="article:modified_time" content="2023-05-28T01:40:07.414Z">
+<meta property="article:modified_time" content="2023-05-28T01:48:21.056Z">
 <meta property="article:author" content="butterflyzh">
 <meta property="article:tag" content="原创">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>webclient-upload-file - Butterflyzh&#39;s blog</title>
+  <title>Spring-cloud-gateway-mvc 解决文件上传 - Butterflyzh&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -166,7 +166,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="webclient-upload-file"></span>
+            <span id="subtitle" data-typed-text="Spring-cloud-gateway-mvc 解决文件上传"></span>
           
         </div>
 
@@ -238,7 +238,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">webclient-upload-file</h1>
+            <h1 style="display: none">Spring-cloud-gateway-mvc 解决文件上传</h1>
             
             
               <div class="markdown-body">
@@ -251,7 +251,7 @@
 <p>我们解决是第二种方法，处理逻辑就是：首先，判断请求是否为 multipart 类型；如果是则获取请求的 MuliFileMap 对象，并转换成 Body, 最后通过 WebClient 请求。具体解决代码如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> ProxyExchange&lt;ApiResult&lt;?&gt;&gt; configure(ProxyExchange&lt;ApiResult&lt;?&gt;&gt; proxy, String service, HttpServletRequest request) <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 获取下游服务地址</span><br>    <span class="hljs-type">var</span> <span class="hljs-variable">endpoint</span> <span class="hljs-operator">=</span> getEndpoint(service);<br>    <span class="hljs-type">var</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> proxy.path().substring(service.length() + <span class="hljs-number">1</span>);<br>    <span class="hljs-type">StringBuilder</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>(endpoint + <span class="hljs-string">&quot;/admin&quot;</span> + path);<br>    <span class="hljs-keyword">if</span> (ObjectUtil.isNotNull(request.getQueryString())) &#123;<br>        uri.append(<span class="hljs-string">&quot;?&quot;</span>).append(request.getQueryString());<br>    &#125;<br>    <span class="hljs-comment">// 判断请求是否为 MulitiPart 类型</span><br>    <span class="hljs-keyword">if</span> (isMultipart(request)) &#123;<br>        <span class="hljs-keyword">return</span> processMultipartRequest(proxy, request, uri.toString());<br>    &#125;<br>    proxy.uri(uri.toString());<br>    <span class="hljs-keyword">return</span> proxy;<br>&#125;<br><br><span class="hljs-meta">@GetMapping(value = &quot;/**&quot;)</span><br><span class="hljs-keyword">public</span> ResponseEntity&lt;ApiResult&lt;?&gt;&gt; get(ProxyExchange&lt;ApiResult&lt;?&gt;&gt; proxy, <span class="hljs-meta">@PathVariable</span> String service, HttpServletRequest request) <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-keyword">return</span> configure(proxy, service, request).get();<br>&#125;<br><br><span class="hljs-meta">@PostMapping(value = &quot;/**&quot;)</span><br><span class="hljs-keyword">public</span> ResponseEntity&lt;ApiResult&lt;?&gt;&gt; post(ProxyExchange&lt;ApiResult&lt;?&gt;&gt; proxy, <span class="hljs-meta">@PathVariable</span> String service, HttpServletRequest request) <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">var</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> configure(proxy, service, request).post();<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-keyword">private</span> ProxyExchange&lt;ApiResult&lt;?&gt;&gt; processMultipartRequest(ProxyExchange&lt;ApiResult&lt;?&gt;&gt; proxy, HttpServletRequest request, String url) <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">var</span> <span class="hljs-variable">multipartHttpServletRequest</span> <span class="hljs-operator">=</span> ((StandardMultipartHttpServletRequest) request);<br>    proxy.header(MediaType.MULTIPART_FORM_DATA_VALUE);<br>    proxy.body(createMultiFileBody(multipartHttpServletRequest.getMultiFileMap()));<br>    <span class="hljs-type">UriComponentsBuilder</span> <span class="hljs-variable">builder</span> <span class="hljs-operator">=</span> UriComponentsBuilder.fromHttpUrl(url);<br>    <span class="hljs-comment">// 传递请求参数</span><br>    multipartHttpServletRequest.getParameterMap().forEach((paramName, paramValues) -&gt; &#123;<br>        <span class="hljs-keyword">if</span> (paramValues != <span class="hljs-literal">null</span> &amp;&amp; paramValues.length &gt; <span class="hljs-number">0</span>) &#123;<br>            builder.queryParam(paramName, paramValues);<br>        &#125;<br>    &#125;);<br>    proxy.uri(builder.build().toUriString());<br>    <span class="hljs-keyword">return</span> proxy;<br>&#125;<br><br><span class="hljs-keyword">private</span> LinkedMultiValueMap&lt;String, Object&gt; <span class="hljs-title function_">createMultiFileBody</span><span class="hljs-params">(MultiValueMap&lt;String, MultipartFile&gt; multiFileMap)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">var</span> <span class="hljs-variable">multiPartBody</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedMultiValueMap</span>&lt;String, Object&gt;();<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> key : multiFileMap.keySet()) &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> file : multiFileMap.get(key)) &#123;<br>            multiPartBody.add(key, <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayResource</span>(file.getBytes()) &#123;<br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getFilename</span><span class="hljs-params">()</span> &#123;<br>                    <span class="hljs-keyword">return</span> file.getOriginalFilename();<br>                &#125;<br>            &#125;);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> multiPartBody;<br>&#125;<br><br><span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isMultipart</span><span class="hljs-params">(HttpServletRequest request)</span> &#123;<br>    <span class="hljs-keyword">return</span> multipartResolver.isMultipart(request) &amp;&amp; request <span class="hljs-keyword">instanceof</span> StandardMultipartHttpServletRequest;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>ProxyExchange 内部其实是用 WebClient 来 Http 的请求客户端。</p>
+<p>ProxyExchange 内部其实是用 WebClient 作为 Http 的请求客户端。</p>
 
                 
               </div>
@@ -297,7 +297,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>webclient-upload-file</div>
+      <div>Spring-cloud-gateway-mvc 解决文件上传</div>
       <div>https://butterflyzh.github.io/2023/05/28/webclient-upload-file/</div>
     </div>
     <div class="license-meta">
@@ -346,8 +346,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/28/hello-world/" title="Hello World">
-                        <span class="hidden-mobile">Hello World</span>
+                      <a href="/2023/05/04/mybatis-03-TypeAliases/" title="Mybatias别名配置">
+                        <span class="hidden-mobile">Mybatias别名配置</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
