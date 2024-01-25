@@ -16,24 +16,26 @@
   <meta name="author" content="butterflyzh">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Mybatis配置文件的子节点Properties是用来配置外部参数，例如数据库用户名、密码等等。 Properties节点配置方式Properties节点有4种配置方式：  指定Properties节点的resource属性 指定Properties节点的url属性 在Properties节点下添加子节点Propertie 构造SqlSessionFactoryBuilder对象时，指定Prop">
+    <meta name="description" content="1.什么镜像Docker 镜像是由一层一层的文件系统层组成的，每一层都是只读（read-only）。当从 Docker 镜像创建容器实例时，会在容器会在最顶层挂载一个可读可写的文件系统层，这样就可以运行任何进程。  当 Docker 从镜像创建容器时，最初的读写层是空的。随着容器内部状态的变化（文件的改变），也会发生在读写层。例如，当我们想改变一个文件（修改文件内容），Docker 实际会从镜像层">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Properties节点配置">
-<meta property="og:url" content="https://butterflyzh.github.io/2023/04/16/mybatis-02-Configuration-Properties/index.html">
+<meta property="og:title" content="Docker 镜像">
+<meta property="og:url" content="https://butterflyzh.github.io/2024/01/25/docker/docker-02-%E9%95%9C%E5%83%8F/index.html">
 <meta property="og:site_name" content="Butterflyzh&#39;s blog">
-<meta property="og:description" content="Mybatis配置文件的子节点Properties是用来配置外部参数，例如数据库用户名、密码等等。 Properties节点配置方式Properties节点有4种配置方式：  指定Properties节点的resource属性 指定Properties节点的url属性 在Properties节点下添加子节点Propertie 构造SqlSessionFactoryBuilder对象时，指定Prop">
+<meta property="og:description" content="1.什么镜像Docker 镜像是由一层一层的文件系统层组成的，每一层都是只读（read-only）。当从 Docker 镜像创建容器实例时，会在容器会在最顶层挂载一个可读可写的文件系统层，这样就可以运行任何进程。  当 Docker 从镜像创建容器时，最初的读写层是空的。随着容器内部状态的变化（文件的改变），也会发生在读写层。例如，当我们想改变一个文件（修改文件内容），Docker 实际会从镜像层">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-04-16T10:44:57.000Z">
+<meta property="og:image" content="https://butterflyzh.github.io/Screenshot_from_2024-01-04%2014-28-18.png">
+<meta property="article:published_time" content="2024-01-25T14:08:13.891Z">
 <meta property="article:modified_time" content="2024-01-25T14:08:13.891Z">
 <meta property="article:author" content="butterflyzh">
 <meta property="article:tag" content="原创">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://butterflyzh.github.io/Screenshot_from_2024-01-04%2014-28-18.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>Properties节点配置 - Butterflyzh&#39;s blog</title>
+  <title>Docker 镜像 - Butterflyzh&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -168,7 +170,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Properties节点配置"></span>
+            <span id="subtitle" data-typed-text="Docker 镜像"></span>
           
         </div>
 
@@ -179,8 +181,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-16 10:44" pubdate>
-          2023年4月16日 上午
+        <time datetime="2024-01-25 14:08" pubdate>
+          2024年1月25日 下午
         </time>
       </span>
     
@@ -191,7 +193,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.9k 字
+          2.4k 字
         
       </span>
     
@@ -202,7 +204,7 @@
         
         
         
-          25 分钟
+          20 分钟
         
       </span>
     
@@ -240,42 +242,67 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Properties节点配置</h1>
+            <h1 style="display: none">Docker 镜像</h1>
             
             
               <div class="markdown-body">
                 
-                <p>Mybatis配置文件的子节点Properties是用来配置外部参数，例如数据库用户名、密码等等。</p>
-<h3 id="Properties节点配置方式"><a href="#Properties节点配置方式" class="headerlink" title="Properties节点配置方式"></a>Properties节点配置方式</h3><p>Properties节点有4种配置方式：</p>
+                <h1 id="1-什么镜像"><a href="#1-什么镜像" class="headerlink" title="1.什么镜像"></a>1.什么镜像</h1><p>Docker 镜像是由一层一层的文件系统层组成的，每一层都是只读（read-only）。当从 Docker 镜像创建容器实例时，会在容器会在最顶层挂载一个可读可写的文件系统层，这样就可以运行任何进程。</p>
+<p><img src="/./Screenshot_from_2024-01-04%2014-28-18.png" srcset="/img/loading.gif" lazyload alt="Screenshot from 2024-01-04 14-28-18.png"></p>
+<p>当 Docker 从镜像创建容器时，最初的读写层是空的。随着容器内部状态的变化（文件的改变），也会发生在读写层。例如，当我们想改变一个文件（修改文件内容），Docker 实际会从镜像层复制一个相同的文件，然后在新的文件上修改。镜像层的文件内容并没有发生变化（镜像是只读的）。</p>
+<h1 id="2-构建镜像"><a href="#2-构建镜像" class="headerlink" title="2.构建镜像"></a>2.构建镜像</h1><p>构建镜像有两种方式：docker commit 或在 Dockerfile。使用Dockerfile的方式更加推荐和常用，因为 Dockerfile 构建镜像更加直观和便于维护。</p>
+<h2 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit"></a>docker commit</h2><p>docker commit 可类似理解成 git 的 commit，我们可以基于现有的容器来制作新的镜像。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo docker commit -m <span class="hljs-string">&quot;new image&quot;</span> -a <span class="hljs-string">&quot;Author name&quot;</span> 容器名或容器ID 镜像名<br></code></pre></td></tr></table></figure>
+
+<p>-m 选项指定提交信息；-a 选项指定作者名</p>
+<h2 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h2><p>使用 Dockerfile 文件来创建镜像，会把 Dockerfile 所在的目录上传至docker 守护进程中去构建镜像，所以对于对构建镜像无用一些文件或者目录，可以通过 .dockerignore 文件来忽视。</p>
+<p>创建一个 Dockerfile 文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br>RUN apt-get update &amp;&amp; apt-get install -y nginx<br>RUN <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Helo, Nginx&quot;</span> &gt; /usr/share/nginx/index.html<br>EXPOSE 80<br></code></pre></td></tr></table></figure>
+
+<p>docker执行这些命令大概流程如下：</p>
 <ul>
-<li>指定Properties节点的resource属性</li>
-<li>指定Properties节点的url属性</li>
-<li>在Properties节点下添加子节点Propertie</li>
-<li>构造SqlSessionFactoryBuilder对象时，指定Properties</li>
+<li>docker 会从 ubuntu 镜像创建一个容器</li>
+<li>然后在容器中执行指令，让容器状态发生变化</li>
+<li>docker 执行 docker commit 构建一个新的镜像</li>
+<li>docker 会从新的镜像再创建一个容器</li>
+<li>然后执行下一条指令，一直重复上面过程，直到所有指令都被执行完成</li>
 </ul>
-<p><strong>Properties节点的resource属性</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span> <span class="hljs-attr">resource</span>=<span class="hljs-string">&quot;org/mybatis/example/config.properties&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
-<p>这里resource指向classpath下的config.properties文件，由Resources来完成文件读取工作。</p>
-<p><strong>Properties节点的url属性</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span> <span class="hljs-attr">url</span>=<span class="hljs-string">&quot;file:C:/org/mybatis/example/config.properties&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
-<p>如果外部参数文件不在classpath内或者在其他服务器上，那我们就可以通过url属性来加载文件了。</p>
-<p><strong>Properties子节点Propertie</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;dev_user&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;F2Fa3!33TYyg&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>docker 构建镜像是一层一层的构建的，如果在构建过程中，某一步出错了，之前构建的层也是可以使用的。</p>
+<p>RUN 指令在 Shell 上执行这些命令，例如：安装 nginx 等。如果运行 RUN 指令在没有 shell 的平台，我们可以通过 exec 的格式来执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">RUN [<span class="hljs-string">&quot;apt-get&quot;</span>, <span class="hljs-string">&quot;install&quot;</span>, <span class="hljs-string">&quot;-y&quot;</span>, <span class="hljs-string">&quot;nginx&quot;</span>]<br></code></pre></td></tr></table></figure>
 
-<p><strong>SqlSessionFactoryBuilder指定Properties</strong><br>SqlSessionFactoryBuilder有许多build的重载方法，build方法可以传入Properties对象，这样也可以配置外部参数。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">resource</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;org/apache/ibatis/builder/MapperConfig.xml&quot;</span>;<br><span class="hljs-keyword">final</span> <span class="hljs-type">Reader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> Resources.getResourceAsReader(resource);<br><span class="hljs-type">Properties</span> <span class="hljs-variable">props</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>props.put(<span class="hljs-string">&quot;driver&quot;</span>, <span class="hljs-string">&quot;123&quot;</span>);<br>props.put(<span class="hljs-string">&quot;url&quot;</span>, <span class="hljs-string">&quot;jdbc:mysql&quot;</span>);<br>sqlMapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SqlSessionFactoryBuilder</span>().build(reader, props);<br></code></pre></td></tr></table></figure>
+<h3 id="从Dockerfile中构建镜像"><a href="#从Dockerfile中构建镜像" class="headerlink" title="从Dockerfile中构建镜像"></a>从Dockerfile中构建镜像</h3><p>使用 docker build 来构建镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo docker build -t=<span class="hljs-string">&quot;butterflyzh/hello_nginx&quot;</span> .<br></code></pre></td></tr></table></figure>
 
+<h3 id="构建缓存"><a href="#构建缓存" class="headerlink" title="构建缓存"></a>构建缓存</h3><p>docker 在构建镜像时，会把每一层都作为镜像缓存，方便下次构建时，加快构建速度。为了让缓存失效有两种方式：一种改变Dockerfile里面的指令；在构建时增加 —no-cache 选项</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo docker build --no-cache -t=<span class="hljs-string">&quot;butterflyzh/hello_nginx:1.0&quot;</span> .<br></code></pre></td></tr></table></figure>
 
-<h3 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h3><p>上面我们已经知道了4种配置方式，你可能会有这样疑问，如果4种方式都同时使用，且都配置相同的属性名时，谁的优先级更高呢？</p>
-<p>结论是：SqlSessionFactoryBuilder的方式 <font color="red">&gt;</font> Properties节点resource属性 <font color="red">&#x3D;</font> Properties节点url属性 <font color="red">&gt;</font> Properties节点子节点。</p>
-<p>注意：resource属性和url属性不能同时存在。</p>
-<p>具体源码如下所示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-title function_">XMLConfigBuilder</span><span class="hljs-params">(Class&lt;? extends Configuration&gt; configClass, XPathParser parser, String environment,</span><br><span class="hljs-params">    Properties props)</span> &#123;<br>  <span class="hljs-built_in">super</span>(newConfig(configClass));<br>  ErrorContext.instance().resource(<span class="hljs-string">&quot;SQL Mapper Configuration&quot;</span>);<br>  <span class="hljs-comment">// props 来自于SqlSessionFactoryBuilder</span><br>  <span class="hljs-built_in">this</span>.configuration.setVariables(props);<br>  <span class="hljs-built_in">this</span>.parsed = <span class="hljs-literal">false</span>;<br>  <span class="hljs-built_in">this</span>.environment = environment;<br>  <span class="hljs-built_in">this</span>.parser = parser;<br>&#125;<br><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">propertiesElement</span><span class="hljs-params">(XNode context)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>  <span class="hljs-keyword">if</span> (context != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-comment">// 获取Properties下的Propertie节点，优先级最低</span><br>    <span class="hljs-type">Properties</span> <span class="hljs-variable">defaults</span> <span class="hljs-operator">=</span> context.getChildrenAsProperties();<br>    <span class="hljs-type">String</span> <span class="hljs-variable">resource</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;resource&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;url&quot;</span>);<br>    <span class="hljs-keyword">if</span> (resource != <span class="hljs-literal">null</span> &amp;&amp; url != <span class="hljs-literal">null</span>) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BuilderException</span>(<br>          <span class="hljs-string">&quot;The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> (resource != <span class="hljs-literal">null</span>) &#123;<br>      defaults.putAll(Resources.getResourceAsProperties(resource));<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (url != <span class="hljs-literal">null</span>) &#123;<br>      defaults.putAll(Resources.getUrlAsProperties(url));<br>    &#125;<br>    <span class="hljs-comment">// 来自于SqlSessionFactoryBuilder, 优先级最高</span><br>    <span class="hljs-type">Properties</span> <span class="hljs-variable">vars</span> <span class="hljs-operator">=</span> configuration.getVariables();<br>    <span class="hljs-keyword">if</span> (vars != <span class="hljs-literal">null</span>) &#123;<br>      defaults.putAll(vars);<br>    &#125;<br>    parser.setVariables(defaults);<br>    configuration.setVariables(defaults);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="3-Dockerfile-指令"><a href="#3-Dockerfile-指令" class="headerlink" title="3.Dockerfile 指令"></a>3.Dockerfile 指令</h1><p>Dockerfile有许多指令，这里只学习几个常用的指令：CMD、ENTRYPOINT、ADD、COPY、ENV、WORKDIR</p>
+<h2 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h2><p>CMD 在容器启动时，运行其指定的命令，和 RUN 指令类似，RUN 指令在镜像构建中运行命令。Dockerfile 中只能有一个 CMD 指令，如果有多个 CMD 指令，最后一个才生效。docker run 传递的命令会覆盖 Dockerfile 里面 CMD 指令。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo docker run -it hello_nginx /bin/true<br></code></pre></td></tr></table></figure>
 
+<p>等同在 Dockerfile 增加以下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">CMD [<span class="hljs-string">&quot;/bin/true&quot;</span>]<br></code></pre></td></tr></table></figure>
 
-<h3 id="占位符的替换"><a href="#占位符的替换" class="headerlink" title="占位符的替换"></a>占位符的替换</h3><p>Mybatis支持占位符替换，例如在配置数据库时，配置如下所示：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dataSource</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;POOLED&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;username&#125;&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dataSource</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<p>这里的 ${username} 会被替换成 Properties 节点定义的值。占位符替换是由 <strong>PropertyParser</strong> 实现的。</p>
+<h2 id="ENTRYPOINT"><a href="#ENTRYPOINT" class="headerlink" title="ENTRYPOINT"></a>ENTRYPOINT</h2><p>ENTRYPOINT 指令和 CMD 指令的功能类似。但是 ENTRYPOINT 指令并不容易被 docker run 覆盖，docker run 所指定任何参数都会被传递到 ENTRYPOINT 指令。还可以和 CMD 指令搭配实现可选参数配置。</p>
+<p>例如，在 Dockerfile 使用 ENTRYPOINT 指令，然后通过 docker run 指定 -g “deamon off;” 来启动 Nginx。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ENTRYPOINT [<span class="hljs-string">&quot;/usr/sbin/nginx&quot;</span>]<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d -p 80 --name nginx1 hello_nginx:1.0 -g <span class="hljs-string">&quot;deamon off;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>-g “deamon off;” 参数会被传递到 ENTRYPOINT 指令中，变成 usr&#x2F;sbin&#x2F;nginx -g “daemon off;”</p>
+<p>CMD 指令和 ENTRYPOINT 一起使用，实现默认配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ENTRYPOINT [<span class="hljs-string">&quot;/usr/sbin/nginx&quot;</span>]<br>CMD [<span class="hljs-string">&quot;-h&quot;</span>]<br></code></pre></td></tr></table></figure>
+
+<p>当 docker run 没有任何参数时，容器将以  usr&#x2F;sbin&#x2F;nginx -h 运行</p>
+<h2 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h2><p>WORKDIR 指令是设置工作目录的，也就当前所在哪个目录下</p>
+<h2 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h2><p>ENV 设置变量，后面的任何指令都可以使用这些变量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ENV TARGET_DIR /opt/app<br>WORKDIR <span class="hljs-variable">$TARGET_DIR</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="ADD"><a href="#ADD" class="headerlink" title="ADD"></a>ADD</h2><p>ADD 指令可以添加在构建上下文中的文件或着目录到镜像里。tar 类型会自动进行解压，也可以指定 URL</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ADD http://wordpress.org/latest.zip /root/wordpress.zip<br>ADD latest.tar.gz /var/www/wordpress/<br></code></pre></td></tr></table></figure>
+
+<h2 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h2><p>COPY 指令和 ADD 指令功能差不多，COPY 就单纯复制文件或目录。</p>
 
                 
               </div>
@@ -294,7 +321,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Mybatis/" class="category-chain-item">Mybatis</a>
+  <a href="/categories/Docker/" class="category-chain-item">Docker</a>
   
   
 
@@ -321,8 +348,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Properties节点配置</div>
-      <div>https://butterflyzh.github.io/2023/04/16/mybatis-02-Configuration-Properties/</div>
+      <div>Docker 镜像</div>
+      <div>https://butterflyzh.github.io/2024/01/25/docker/docker-02-镜像/</div>
     </div>
     <div class="license-meta">
       
@@ -334,7 +361,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月16日</div>
+          <div>2024年1月25日</div>
         </div>
       
       
@@ -366,9 +393,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/04/mybatis-03-TypeAliases/" title="Mybatias别名配置">
+                      <a href="/2024/01/25/docker/docker-01-%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" title="Docker 基础命令">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Mybatias别名配置</span>
+                        <span class="hidden-mobile">Docker 基础命令</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -376,8 +403,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/09/mybatis-01-SqlSessionFactoryBuilder/" title="SqlSessionFactoryBuilder">
-                        <span class="hidden-mobile">SqlSessionFactoryBuilder</span>
+                      <a href="/2024/01/25/docker/docker-03-Jenkins%20%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E5%8F%91%E5%B8%83/" title="Jenkins CI/CD">
+                        <span class="hidden-mobile">Jenkins CI/CD</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

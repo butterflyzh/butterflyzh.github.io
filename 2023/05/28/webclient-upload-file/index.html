@@ -24,11 +24,13 @@
 <meta property="og:description" content="背景我们有个管理后台的服务使用 spring-cloud-gateway-mvc 作为网关代理到其他服务来管理系统。我们有个上传文件的场景，但是由于 spring-cloud-gateway-mvc 并没有把上传的文件代理到其他服务。解决的办法有两种方式：  通过生成对象存储的预签名的方式 用webClient上传文件  我们解决是第二种方法，处理逻辑就是：首先，判断请求是否为 multipart">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-05-28T09:04:20.000Z">
-<meta property="article:modified_time" content="2023-05-28T01:48:21.056Z">
+<meta property="article:modified_time" content="2024-01-25T14:08:13.895Z">
 <meta property="article:author" content="butterflyzh">
 <meta property="article:tag" content="原创">
 <meta name="twitter:card" content="summary_large_image">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>Spring-cloud-gateway-mvc 解决文件上传 - Butterflyzh&#39;s blog</title>
@@ -342,6 +344,12 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2023/05/28/mybatis-04-resultMap/" title="mybatis-04-resultMap">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">mybatis-04-resultMap</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
@@ -431,6 +439,30 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
   
   
   
@@ -575,6 +607,8 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

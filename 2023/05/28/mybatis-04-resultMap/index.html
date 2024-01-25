@@ -1,0 +1,695 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avator.png">
+  <link rel="icon" href="/img/avator.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="butterflyzh">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ResultMap是开发中经常遇到到，Mybatis是如何解析和存储ResultMap的呢？ ResultMap的存储结构ResultMap代表结果集, 一个ResultMap包含多个ResultMapping。ResultMapping代表数据库字段和JavaBean属性的映射关系。 classDiagram class ResultMapping &amp;#123;     private Stri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mybatis-04-resultMap">
+<meta property="og:url" content="https://butterflyzh.github.io/2023/05/28/mybatis-04-resultMap/index.html">
+<meta property="og:site_name" content="Butterflyzh&#39;s blog">
+<meta property="og:description" content="ResultMap是开发中经常遇到到，Mybatis是如何解析和存储ResultMap的呢？ ResultMap的存储结构ResultMap代表结果集, 一个ResultMap包含多个ResultMapping。ResultMapping代表数据库字段和JavaBean属性的映射关系。 classDiagram class ResultMapping &amp;#123;     private Stri">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-28T14:42:34.000Z">
+<meta property="article:modified_time" content="2024-01-25T14:08:13.895Z">
+<meta property="article:author" content="butterflyzh">
+<meta property="article:tag" content="原创">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>mybatis-04-resultMap - Butterflyzh&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"butterflyzh.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Butterflyzh&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="mybatis-04-resultMap"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-28 14:42" pubdate>
+          2023年5月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          84 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">mybatis-04-resultMap</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>ResultMap是开发中经常遇到到，Mybatis是如何解析和存储ResultMap的呢？</p>
+<h3 id="ResultMap的存储结构"><a href="#ResultMap的存储结构" class="headerlink" title="ResultMap的存储结构"></a>ResultMap的存储结构</h3><p>ResultMap代表结果集, 一个ResultMap包含多个ResultMapping。ResultMapping代表数据库字段和JavaBean属性的映射关系。</p>
+<pre><code class=" mermaid">classDiagram
+class ResultMapping &#123;
+    private String property;
+  private String column;
+  private Class~?~ javaType;
+  private JdbcType jdbcType;
+  private TypeHandler~?~ typeHandler;
+  private String nestedResultMapId;
+  private String nestedQueryId;
+  private Set~String~ notNullColumns;
+  private String columnPrefix;
+  private List~ResultFlag~ flags;
+  private List~ResultMapping~ composites;
+  private String resultSet;
+  private String foreignColumn;
+  private boolean lazy;
+&#125;
+
+class ResultMap &#123;
+    private String id;
+  private Class&lt;?&gt; type;
+  private List~ResultMapping~ resultMappings;
+  private List~ResultMapping~ idResultMappings;
+  private List~ResultMapping~ constructorResultMappings;
+  private List~ResultMapping~ propertyResultMappings;
+  private Set~String~ mappedColumns;
+  private Set~String~ mappedProperties;
+  private Discriminator discriminator;
+  private boolean hasNestedResultMaps;
+  private boolean hasNestedQueries;
+  private Boolean autoMapping;
+&#125;
+
+ResultMap *-- ResultMapping
+</code></pre>
+
+<h3 id="ResultMap-解析"><a href="#ResultMap-解析" class="headerlink" title="ResultMap 解析"></a>ResultMap 解析</h3><p>ResultMap 解析可以分为三类：</p>
+<ul>
+<li>constructor 解析</li>
+<li>discriminator 解析</li>
+<li>其他解析</li>
+</ul>
+<p>ResultMap 最终是由 MapperBuilderAssitant 类的方法 addResultMap 方法来创建 ResultMap。核心逻辑代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> ResultMap <span class="hljs-title function_">resultMapElement</span><span class="hljs-params">(XNode resultMapNode, List&lt;ResultMapping&gt; additionalResultMappings,</span><br><span class="hljs-params">      Class&lt;?&gt; enclosingType)</span> &#123;<br><br>    <span class="hljs-keyword">for</span> (XNode resultChild : resultChildren) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;constructor&quot;</span>.equals(resultChild.getName())) &#123;<br>        processConstructorElement(resultChild, typeClass, resultMappings);<br>      &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;discriminator&quot;</span>.equals(resultChild.getName())) &#123;<br>        discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);<br>      &#125; <span class="hljs-keyword">else</span> &#123;<br>        List&lt;ResultFlag&gt; flags = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;id&quot;</span>.equals(resultChild.getName())) &#123;<br>          flags.add(ResultFlag.ID);<br>        &#125;<br>        resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));<br>      &#125;<br>    &#125;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> resultMapNode.getStringAttribute(<span class="hljs-string">&quot;id&quot;</span>, resultMapNode.getValueBasedIdentifier());<br>    <span class="hljs-type">String</span> <span class="hljs-variable">extend</span> <span class="hljs-operator">=</span> resultMapNode.getStringAttribute(<span class="hljs-string">&quot;extends&quot;</span>);<br>    <span class="hljs-type">Boolean</span> <span class="hljs-variable">autoMapping</span> <span class="hljs-operator">=</span> resultMapNode.getBooleanAttribute(<span class="hljs-string">&quot;autoMapping&quot;</span>);<br>    <span class="hljs-type">ResultMapResolver</span> <span class="hljs-variable">resultMapResolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResultMapResolver</span>(builderAssistant, id, typeClass, extend, discriminator,<br>        resultMappings, autoMapping);<br>    <span class="hljs-keyword">try</span> &#123;<br>      <span class="hljs-keyword">return</span> resultMapResolver.resolve();<br>    &#125; <span class="hljs-keyword">catch</span> (IncompleteElementException e) &#123;<br>      configuration.addIncompleteResultMap(resultMapResolver);<br>      <span class="hljs-keyword">throw</span> e;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里 ResultMapsolver 提供一层封装，为了处理 ResultMap 的关键字 extends 指定的父类ResultMap 未被解析之前有机会解析。ResultMapSolver 的方法 resolve 实际调用了 MapperBuilderAssitant 的方法 addResultMap。核心逻辑，这里不考虑 extends 的场景</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> ResultMap <span class="hljs-title function_">addResultMap</span><span class="hljs-params">(String id, Class&lt;?&gt; type, String extend, Discriminator discriminator,</span><br><span class="hljs-params">    List&lt;ResultMapping&gt; resultMappings, Boolean autoMapping)</span> &#123;<br>  id = applyCurrentNamespace(id, <span class="hljs-literal">false</span>);<br>  extend = applyCurrentNamespace(extend, <span class="hljs-literal">true</span>);<br><br>  <span class="hljs-keyword">if</span> (extend != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-comment">// 省略</span><br>  &#125;<br>  <span class="hljs-type">ResultMap</span> <span class="hljs-variable">resultMap</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResultMap</span>.Builder(configuration, id, type, resultMappings, autoMapping)<br>      .discriminator(discriminator).build();<br>  configuration.addResultMap(resultMap);<br>  <span class="hljs-keyword">return</span> resultMap;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>创建ResultMap，并且把ResultMap放入Configuration中。</p>
+<h3 id="ResultMapping解析"><a href="#ResultMapping解析" class="headerlink" title="ResultMapping解析"></a>ResultMapping解析</h3><p>ResultMap都是由ResultMapping组成的，我们先来看Mybatis是如何解析ResultMapping的。方法 buildResultMappingFromContext 用解析ResultMapping。具体代码如下所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> ResultMapping <span class="hljs-title function_">buildResultMappingFromContext</span><span class="hljs-params">(XNode context, Class&lt;?&gt; resultType, List&lt;ResultFlag&gt; flags)</span> &#123;<br>  String property;<br>  <span class="hljs-keyword">if</span> (flags.contains(ResultFlag.CONSTRUCTOR)) &#123;<br>    property = context.getStringAttribute(<span class="hljs-string">&quot;name&quot;</span>);<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    property = context.getStringAttribute(<span class="hljs-string">&quot;property&quot;</span>);<br>  &#125;<br>  <span class="hljs-type">String</span> <span class="hljs-variable">column</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;column&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">javaType</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;javaType&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">jdbcType</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;jdbcType&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">nestedSelect</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;select&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">nestedResultMap</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;resultMap&quot;</span>,<br>      () -&gt; processNestedResultMappings(context, Collections.emptyList(), resultType));<br>  <span class="hljs-type">String</span> <span class="hljs-variable">notNullColumn</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;notNullColumn&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">columnPrefix</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;columnPrefix&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">typeHandler</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;typeHandler&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">resultSet</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;resultSet&quot;</span>);<br>  <span class="hljs-type">String</span> <span class="hljs-variable">foreignColumn</span> <span class="hljs-operator">=</span> context.getStringAttribute(<span class="hljs-string">&quot;foreignColumn&quot;</span>);<br>  <span class="hljs-type">boolean</span> <span class="hljs-variable">lazy</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;lazy&quot;</span><br>      .equals(context.getStringAttribute(<span class="hljs-string">&quot;fetchType&quot;</span>, configuration.isLazyLoadingEnabled() ? <span class="hljs-string">&quot;lazy&quot;</span> : <span class="hljs-string">&quot;eager&quot;</span>));<br>  <span class="hljs-comment">// resolveClass 会先从 typeAliasRegistry 中获取, 获取不到则加载 javaType</span><br>  <span class="hljs-comment">// 所以 javaType 要么是别名，要么是全限定类名</span><br>  Class&lt;?&gt; javaTypeClass = resolveClass(javaType);<br>  <span class="hljs-comment">// 解析 typeHandler 类似</span><br>  Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">TypeHandler</span>&lt;?&gt;&gt; typeHandlerClass = resolveClass(typeHandler);<br>  <span class="hljs-type">JdbcType</span> <span class="hljs-variable">jdbcTypeEnum</span> <span class="hljs-operator">=</span> resolveJdbcType(jdbcType);<br>  <span class="hljs-keyword">return</span> builderAssistant.buildResultMapping(resultType, property, column, javaTypeClass, jdbcTypeEnum, nestedSelect,<br>      nestedResultMap, notNullColumn, columnPrefix, typeHandlerClass, flags, resultSet, foreignColumn, lazy);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个方法做的获取定义的数据库字段名、数据库字段的类型、javaBean的属性名、javaBean的属性的类型等等。真正负责创建 ResultMapping的职责交给了 MapperBuilderAssistant 类。</p>
+<p>MapperBuilderAssistant 类的方法 buildResultMapping 是创建 ResultMapping的，具体代码如下所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> ResultMapping <span class="hljs-title function_">buildResultMapping</span><span class="hljs-params">(Class&lt;?&gt; resultType, String property, String column, Class&lt;?&gt; javaType,</span><br><span class="hljs-params">      JdbcType jdbcType, String nestedSelect, String nestedResultMap, String notNullColumn, String columnPrefix,</span><br><span class="hljs-params">      Class&lt;? extends TypeHandler&lt;?&gt;&gt; typeHandler, List&lt;ResultFlag&gt; flags, String resultSet, String foreignColumn,</span><br><span class="hljs-params">      <span class="hljs-type">boolean</span> lazy)</span> &#123;<br><br>    Class&lt;?&gt; javaTypeClass = resolveResultJavaType(resultType, property, javaType);<br>    TypeHandler&lt;?&gt; typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);<br>    List&lt;ResultMapping&gt; composites;<br>    <span class="hljs-keyword">if</span> ((nestedSelect == <span class="hljs-literal">null</span> || nestedSelect.isEmpty()) &amp;&amp; (foreignColumn == <span class="hljs-literal">null</span> || foreignColumn.isEmpty())) &#123;<br>      composites = Collections.emptyList();<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      composites = parseCompositeColumnName(column);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResultMapping</span>.Builder(configuration, property, column, javaTypeClass).jdbcType(jdbcType)<br>        .nestedQueryId(applyCurrentNamespace(nestedSelect, <span class="hljs-literal">true</span>))<br>        .nestedResultMapId(applyCurrentNamespace(nestedResultMap, <span class="hljs-literal">true</span>)).resultSet(resultSet)<br>        .typeHandler(typeHandlerInstance).flags(flags == <span class="hljs-literal">null</span> ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;() : flags).composites(composites)<br>        .notNullColumns(parseMultipleColumnNames(notNullColumn)).columnPrefix(columnPrefix).foreignColumn(foreignColumn)<br>        .lazy(lazy).build();<br>  &#125;<br></code></pre></td></tr></table></figure>
+<p>首先 resolveResultJavaType 方法解析属性 property 的返回类型，这里 resultType 就是JavaBean的类型，property是JavaBean的属性名。例如，我们定义 Person 类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br>    <span class="hljs-keyword">private</span> String name;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当我们调用 resolveResultJavaType 方法来解析 Person 时，将返回 String.class</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; javaTypeClass = resolveResultJavaType(Person.class, <span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-literal">null</span>);<br>assertEquals(javaTypeClass, String.class);<br></code></pre></td></tr></table></figure>
+<p>如果我们有嵌套查询类似定义，方法 parseCompositeColumnName 负责解析嵌套查询的字段。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">collection</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;posts&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;&#123;blog_id=id,author_id=author_id&#125;&quot;</span> <span class="hljs-attr">select</span>=<span class="hljs-string">&quot;selectPostsForBlog&quot;</span> <span class="hljs-attr">fetchType</span>=<span class="hljs-string">&quot;lazy&quot;</span>/&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;selectPostsForBlog&quot;</span> <span class="hljs-attr">parameterType</span>=<span class="hljs-string">&quot;map&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;Post&quot;</span>&gt;</span><br>  select * from Post where blog_id = #&#123;blog_id&#125; and author_id = #&#123;author_id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>例如，通过关键字 select 指定嵌套查询，column 定义了查询条件。parseCompositeColumnName 方法解析2个ResultMapping。用 json 来描述一下ResultMapping 存储的数据。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">[</span><br>  <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;blog_id&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;id&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;author_id&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;author_id&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">]</span><br></code></pre></td></tr></table></figure>
+<p>其他方法就很好理解了，就不列举了。</p>
+<ol>
+<li>id 的处理<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;blogResult&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;Blog&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;id&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;blog_id&quot;</span> /&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;title&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;blog_title&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br></code></pre></td></tr></table></figure>
+对于 id 和 result 处理逻辑都是一样的，只不过 id 多一个 ResultFlag.ID 标志。<br>此时，构建出来的RestMapping如下所示：<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;configuration&quot;</span><span class="hljs-punctuation">:</span> Configuration<span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;id&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;blog_id&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;javaType&quot;</span><span class="hljs-punctuation">:</span> int<span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;flags&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-string">&quot;ID&quot;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;blogWithPosts&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;Blog&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;id&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;id&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;title&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;title&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">association</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;author&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;author_id&quot;</span></span><br><span class="hljs-tag">                <span class="hljs-attr">select</span>=<span class="hljs-string">&quot;org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthorWithInlineParams&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">collection</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;posts&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;&#123;blog_id=id,author_id=author_id&#125;&quot;</span> <span class="hljs-attr">select</span>=<span class="hljs-string">&quot;selectPostsForBlog&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>对于有 select 属性的解析</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;configuration&quot;</span><span class="hljs-punctuation">:</span> Configuration<span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&#123;blog_id=id,author_id=author_id&#125;&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;javaType&quot;</span><span class="hljs-punctuation">:</span> ArrayList<span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;nestedQueryId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthorWithInlineParams&quot;</span>，<br>    <span class="hljs-attr">&quot;composites&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;configuration&quot;</span><span class="hljs-punctuation">:</span> Configuration<span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;blog_id&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;id&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;configuration&quot;</span><span class="hljs-punctuation">:</span> Configuration<span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;author_id&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;author_id&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>嵌套nestMap</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;joinedPost&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;org.apache.ibatis.domain.blog.Post&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;id&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;post_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;subject&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;post_subject&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">association</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;author&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;joinedAuthor&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;configuration&quot;</span><span class="hljs-punctuation">:</span> Configuration<span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;property&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posts&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;column&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&#123;blog_id=id,author_id=author_id&#125;&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;javaType&quot;</span><span class="hljs-punctuation">:</span> ArrayList<span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;nestedQueryId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthorWithInlineParams&quot;</span>，<br>    <span class="hljs-attr">&quot;nestedResultMapId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;org.apache.ibatis.domain.blog.mappers.AuthorMapper.joinedAuthor&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Mybatis/" class="category-chain-item">Mybatis</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8E%9F%E5%88%9B/">#原创</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>mybatis-04-resultMap</div>
+      <div>https://butterflyzh.github.io/2023/05/28/mybatis-04-resultMap/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>butterflyzh</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/25/docker/docker-03-Jenkins%20%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E5%8F%91%E5%B8%83/" title="Jenkins CI/CD">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Jenkins CI/CD</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/28/webclient-upload-file/" title="Spring-cloud-gateway-mvc 解决文件上传">
+                        <span class="hidden-mobile">Spring-cloud-gateway-mvc 解决文件上传</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
